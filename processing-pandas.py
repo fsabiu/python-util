@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
 def get_numeric_columns(df):
     """
@@ -22,7 +23,7 @@ def get_unique_df_values(df, dtypes):
     # Parameters:
     #    df (Pandas dataframe): The dataframe from which extract the columns unique values
     #   dtypes (dictionary): Dictionary of column types
-    
+
     # Returns:
     #    A dictionary of {columns -> unique values}
 
@@ -69,3 +70,26 @@ def split(dataset, y):
     r2E, test = train_test_split(veinte, test_size = 0.5, random_state = 0, stratify = veinte[y])
 
     return bb_train, bb_val, sh_train, sh_val, r2E, test
+
+def undersample(df:pd.DataFrame, y:str) -> pd.DataFrame:
+    """
+    # Returns an undersampled dataset
+
+    # Parameters:
+    #   dataset (Pandas dataframe): The dataframe from which extract the columns unique values
+    #   y (string): name of the column representing the target, i.e. column on which stratify
+
+    # Returns:
+    #    A dictionary of {columns -> unique values}
+
+    """
+    # find the number of observations in the smallest group
+    nmin = df[y].value_counts().min()
+    return (df
+            # split the dataframe per group
+            .groupby(y)
+            # sample nmin observations from each group
+            .apply(lambda x: x.sample(nmin))
+            # recombine the dataframes 
+            .reset_index(drop=True)
+            )
